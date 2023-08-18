@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace XLParser
+namespace XLParser.Web.XLParserVersions.v170
 {
     /// <summary>
     /// Contains the XLParser grammar
@@ -550,9 +550,8 @@ namespace XLParser
         private static string[] excelFunctionList => GetExcelFunctionList();
         private static string[] GetExcelFunctionList()
         {
-            var assembly = typeof(ExcelFormulaGrammar).GetTypeInfo().Assembly;
-            var resource = assembly.GetManifestResourceStream("XLParser.Resources.ExcelBuiltinFunctionList.txt");
-            using (var sr = new StreamReader(resource))
+            var resource = Properties.Resources.ExcelBuiltinFunctionList_v170;
+            using (var sr = new StringReader(resource))
                 return sr.ReadToEnd().Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
         }
 

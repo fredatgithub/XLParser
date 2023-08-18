@@ -281,6 +281,19 @@ namespace XLParser.Tests
             CollectionAssert.AreEqual(new[] {"Region"}, references.First().TableColumns);
         }
 
+        // See https://github.com/spreadsheetlab/XLParser/issues/173
+        [TestMethod]
+        public void StructuredTableReferenceWholeRow()
+        {
+            List<ParserReference> references = new FormulaAnalyzer("=INDEX(Table1[@],2)").ParserReferences().ToList();
+
+            Assert.AreEqual(1, references.Count);
+            Assert.AreEqual(ReferenceType.Table, references.First().ReferenceType);
+            Assert.AreEqual("Table1", references.First().Name);
+            CollectionAssert.AreEqual(new[] {"@"}, references.First().TableSpecifiers);
+            CollectionAssert.AreEqual(new string[] {}, references.First().TableColumns);
+        }
+
         [TestMethod]
         public void StructuredTableReferenceColumns()
         {
@@ -487,6 +500,25 @@ namespace XLParser.Tests
             Assert.AreEqual("Sales_4", references[1].Name);
             CollectionAssert.AreEqual(new string[] {}, references[1].TableSpecifiers);
             CollectionAssert.AreEqual(new[] {"Feb"}, references[1].TableColumns);
+        }
+
+        [TestMethod]
+        public void StructuredTableReferenceWithSheetReference()
+        {
+            // See https://github.com/spreadsheetlab/XLParser/issues/170
+            List<ParserReference> references = new FormulaAnalyzer("=VLOOKUP([@ProductNumber],Sheet2!A:B,1,FALSE)").ParserReferences().ToList();
+
+            Assert.AreEqual(2, references.Count);
+
+            Assert.AreEqual(ReferenceType.Table, references[0].ReferenceType);
+            Assert.AreEqual(null, references[0].Name);
+            CollectionAssert.AreEqual(new[] {"@"}, references[0].TableSpecifiers);
+            CollectionAssert.AreEqual(new[] {"ProductNumber"}, references[0].TableColumns);
+
+            Assert.AreEqual(ReferenceType.VerticalRange, references[1].ReferenceType);
+            Assert.AreEqual("Sheet2", references[1].Worksheet);
+            Assert.AreEqual("A", references[1].MinLocation);
+            Assert.AreEqual("B", references[1].MaxLocation);
         }
 
         [TestMethod]
